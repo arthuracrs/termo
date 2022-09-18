@@ -32,14 +32,6 @@ const getWordsWithFiveLetters = (words) => {
     return fiveLettersWords
 }
 
-const upsert = (word, answer) => {
-    const new
-    if (word.indexOf(answer) == -1) {
-        return word + answer
-    }
-    return word
-}
-
 const main = (data) => {
     const wordsArray = parseWordsToArray(data)
     const fiveLettersWords = getWordsWithFiveLetters(wordsArray)
@@ -55,9 +47,8 @@ const main = (data) => {
     rl.on('line', function (answer) {
 
         knowWord = answer.split(' ')[0]
-        lettersInWord = upsert(lettersInWord, knowWord)
-        lettersInWord = upsert(lettersInWord, answer.split(' ')[1])
-        lettersNotInWord = upsert(lettersNotInWord, answer.split(' ')[2])
+        lettersInWord = answer.split(' ')[1]
+        lettersNotInWord = answer.split(' ')[2]
 
         for (let i = 0; i < lettersNotInWord.length; i++) {
             remainingWords = remainingWords.filter((word) => word.indexOf(lettersNotInWord[i]) == -1)
