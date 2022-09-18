@@ -10,7 +10,7 @@ function App() {
   const copyJson = (x) => JSON.parse(JSON.stringify(x))
 
   const positionFactory = () => ({
-    current: '-',
+    current: '',
     state: 2
   })
 
@@ -22,7 +22,14 @@ function App() {
     positionFactory(),
   ]
 
-  const [wordsTry, setWordsTry] = useState([wordTryFactory(), wordTryFactory(), wordTryFactory(), wordTryFactory(), wordTryFactory()])
+  const [wordsTry, setWordsTry] = useState([
+    wordTryFactory(),
+    wordTryFactory(),
+    wordTryFactory(),
+    wordTryFactory(),
+    wordTryFactory(),
+    wordTryFactory()
+  ])
   const [remainingWords, setRemainingWords] = useState(wordsFile.words)
 
   const getWantedLettersOnWantedPositions = () => {
@@ -33,7 +40,7 @@ function App() {
       const wordTry = tempWordsTry[i]
       for (let j = 0; j < wordTry.length; j++) {
         const position = wordTry[j];
-        if (position.state == 0) tempWantedPositions.push({
+        if (position.state === 0) tempWantedPositions.push({
           letter: position.current,
           position: j
         })
@@ -48,7 +55,7 @@ function App() {
         const position = wantedPositions[j];
         for (let i = 0; i < word.length; i++) {
           const letter = word[i];
-          if (position.letter != letter && i == position.position) return false
+          if (position.letter != letter && i === position.position) return false
         }
       }
       return true
@@ -74,7 +81,7 @@ function App() {
       const wordTry = tempWordsTry[i]
       for (let j = 0; j < wordTry.length; j++) {
         const position = wordTry[j];
-        if (position.state == 2) tempUnwantedLetters.push(position.current)
+        if (position.state === 2) tempUnwantedLetters.push(position.current)
       }
     }
     return tempUnwantedLetters
@@ -88,7 +95,7 @@ function App() {
       const wordTry = tempWordsTry[i]
       for (let j = 0; j < wordTry.length; j++) {
         const position = wordTry[j];
-        if (position.state == 1) tempUnwantedPositions.push({
+        if (position.state === 1) tempUnwantedPositions.push({
           letter: position.current,
           position: j
         })
@@ -103,7 +110,7 @@ function App() {
         const letter = word[j]
         for (let k = 0; k < unwantedPositions.length; k++) {
           const unwantedPosition = unwantedPositions[k]
-          const isUnwantedWord = unwantedPosition.position == j && unwantedPosition.letter == letter
+          const isUnwantedWord = unwantedPosition.position === j && unwantedPosition.letter === letter
           if (isUnwantedWord) return true
         }
       }
@@ -127,7 +134,7 @@ function App() {
 
     for (let i = 0; i < unwantedLetters.length; i++) {
       if ((/[a-zA-Z]/).test(unwantedLetters[i]))
-        tempWordsList = tempWordsList.filter((word) => word.indexOf(unwantedLetters[i]) == -1)
+        tempWordsList = tempWordsList.filter((word) => word.indexOf(unwantedLetters[i]) === -1)
     }
 
     return tempWordsList
@@ -141,17 +148,21 @@ function App() {
 
   useEffect(() => {
     let tempRemainingWords = wordsFile.words
-
+   
     tempRemainingWords =
       removeWordsWithUnwantedLetters(
         tempRemainingWords,
         getUnwantedLetters()
       )
+
     tempRemainingWords =
       removeWordsWithWantedLettersOnUnwantedPlaces(
         tempRemainingWords,
         getWantedLettersOnUnwantedPositions()
       )
+
+
+
     tempRemainingWords =
       removeWordsWithoutWantedLettersOnWantedPlaces(
         tempRemainingWords,
@@ -163,13 +174,15 @@ function App() {
 
   return (
     <div className="App">
-      {wordsTry.map(
-        (value, index) => {
-          return <WordTry key={index} wordTryIndex={index} wordTry={value} updateWordTry={updateWordTry} />
-        }
-      )}
+      <div className='wordsTry'>
+        {wordsTry.map(
+          (value, index) => {
+            return <WordTry key={index} wordTryIndex={index} wordTry={value} updateWordTry={updateWordTry} />
+          }
+        )}
+      </div>
       <div className='sugestionWords'>
-        {remainingWords.slice(0, 100).map((value, index) =>
+        {remainingWords.slice(0, 55).map((value, index) =>
           <h3 key={index} className="sugestionWord">
             {value}
           </h3>)}

@@ -1,40 +1,25 @@
 .App {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  /* height: 100vh; */
   gap: 1em;
   font-family: sans-serif;
-}
-
-.letterInput {
-  text-align: center;
-  font-size: 40pt;
-  height: 70px;
-  width: 70px;
+  background-color: #6E5C62;
+  min-height: 100vh;
+  padding-top: 5em;
 }
 
 .sugestionWords {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat( auto-fit, minmax(80px, 1fr));
+  text-align: center;
   margin: 0 10em 0 10em;
   gap: .5em;
+  color: wheat;
 }
 
-.clear {
-  height: 3em;
-}
-
-.unwantedWordsInput {
-  margin-top: 1em;
-  height: 2em;
-  padding: .3em;
-  font-size: 24pt;
-}
-
-.letters{
+.wordsTry{
   display: flex;
-  flex-direction: row;
-  gap: 1em;
-  justify-content: center;
+  width: 100%;
+  flex-direction: column;
+  gap: 5px;
 }

@@ -1,21 +1,18 @@
 import { useState, useEffect } from 'react'
 import './style.css'
 
+import reloadImg from '../../assets/arrow.png'
+
 function WordTry({ updateWordTry, wordTry, wordTryIndex }) {
     const copyJson = x => JSON.parse(JSON.stringify(x))
 
     const [wordTryState, setWordTryState] = useState(wordTry)
 
-    const letterStates = [
-        'RIGHT_POSITION',
-        'WRONG_POSITION',
-        'WRONG_LETTER'
-    ]
-
-    const positionState = {
-        current: '-',
-        state: 2
-    }
+    // const letterStates = [
+    //     'RIGHT_POSITION',
+    //     'WRONG_POSITION',
+    //     'WRONG_LETTER'
+    // ]
 
     const nextLetterState = (letterState) => {
         if (letterState + 1 > 2)
@@ -37,6 +34,7 @@ function WordTry({ updateWordTry, wordTry, wordTryIndex }) {
         tempWordTryState[positionIndex].current = e.target.value
 
         setWordTryState(tempWordTryState)
+
     }
 
     const getPositionInputBackgroundColor = (value) => {
@@ -51,12 +49,12 @@ function WordTry({ updateWordTry, wordTry, wordTryIndex }) {
 
     useEffect(() => {
         updateWordTry(wordTryState, wordTryIndex)
-    }, wordTryState)
+    }, [wordTryState])
 
     return (
         <div className='inputRow'>
             {wordTryState.map((value, index) =>
-                <div key={index} >
+                <div key={index} className={'wordTry'} >
                     <input
                         style={{
                             backgroundColor: getPositionInputBackgroundColor(value)
@@ -67,7 +65,9 @@ function WordTry({ updateWordTry, wordTry, wordTryIndex }) {
                         maxLength="1"
                         value={value.current}
                     />
-                    <div onClick={() => changePositionData(index,)}> %</div>
+                    <div className='changeButtom' onClick={() => changePositionData(index,)}>
+                        <img src={reloadImg}/>
+                    </div>
                 </div>
             )}
         </div>
