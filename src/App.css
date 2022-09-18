@@ -1,0 +1,40 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* height: 100vh; */
+  gap: 1em;
+  font-family: sans-serif;
+}
+
+.letterInput {
+  text-align: center;
+  font-size: 40pt;
+  height: 70px;
+  width: 70px;
+}
+
+.sugestionWords {
+  display: flex;
+  flex-direction: column;
+  margin: 0 10em 0 10em;
+  gap: .5em;
+}
+
+.clear {
+  height: 3em;
+}
+
+.unwantedWordsInput {
+  margin-top: 1em;
+  height: 2em;
+  padding: .3em;
+  font-size: 24pt;
+}
+
+.letters{
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+  justify-content: center;
+}
