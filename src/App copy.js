@@ -7,10 +7,10 @@ import { useState, useEffect } from 'react'
 
 function App() {
   const positionFactory = () => ({
-    current: '-',
-    lettersData: {
-      '-': 2,
-    }
+    currentValue: '-',
+    rightLetter: '',
+    wrongLetter: '',
+    notLetter: ''
   })
 
   const wordTryFactory = () => [
@@ -125,9 +125,6 @@ function App() {
     setWordsTry(tempWordsTry)
   }
 
-  const updateWordTry = (wordTryState) => {
-    console.log(wordTryState)
-  }
 
   useEffect(() => {
     let tempRemainingWords = wordsFile.words
@@ -166,7 +163,7 @@ function App() {
       {wordsTry.map(
         (value, index) => {
           console.log(value)
-          return <WordTry key={index} wordTryIndex={index} wordTry={value} updateWordTry={updateWordTry} />
+          return <WordTry key={index} wordTryIndex={index} knowWord={value} changeHandler={handleInputKnowLetter} />
         }
       )}
       <div className='sugestionWords'>
