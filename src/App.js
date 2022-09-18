@@ -6,11 +6,12 @@ import WordTry from './components/wordTry'
 import { useState, useEffect } from 'react'
 
 function App() {
+
+  const copyJson = (x) => JSON.parse(JSON.stringify(x))
+
   const positionFactory = () => ({
     current: '-',
-    lettersData: {
-      '-': 2,
-    }
+    state: 2
   })
 
   const wordTryFactory = () => [
@@ -21,65 +22,104 @@ function App() {
     positionFactory(),
   ]
 
-  const [knowWord, setKnowWord] = useState(wordTryFactory())
-  const [wordsTry, setWordsTry] = useState([wordTryFactory(), wordTryFactory(), wordTryFactory()])
-  const [wantedLetters, setWantedLetters] = useState([''])
-  const [unwantedLetters, setUnwantedLetters] = useState([''])
+  const [wordsTry, setWordsTry] = useState([wordTryFactory(), wordTryFactory(), wordTryFactory(), wordTryFactory(), wordTryFactory()])
   const [remainingWords, setRemainingWords] = useState(wordsFile.words)
 
-  const removeWordsByWantedLetterOnUnwantedPlaces = (lista, wantedLetter, unwantedPlace) => {
-    const processedWords = []
+  const getWantedLettersOnWantedPositions = () => {
+    const tempWordsTry = copyJson(wordsTry)
+    const tempWantedPositions = []
 
-    for (let i = 0; i < lista.length; i++) {
-      if (lista[i][unwantedPlace] != wantedLetter) {
-        processedWords.push(lista[i])
+    for (let i = 0; i < tempWordsTry.length; i++) {
+      const wordTry = tempWordsTry[i]
+      for (let j = 0; j < wordTry.length; j++) {
+        const position = wordTry[j];
+        if (position.state == 0) tempWantedPositions.push({
+          letter: position.current,
+          position: j
+        })
       }
     }
-    return processedWords
+    return tempWantedPositions
   }
 
-  const getWordsByLetterOnWantedPlaces = (lista, letra, position) => {
-    const processedWords = []
+  const removeWordsWithoutWantedLettersOnWantedPlaces = (wordsList, wantedPositions) => {
+    const checkIsWantedWord = (word) => {
+      for (let j = 0; j < wantedPositions.length; j++) {
+        const position = wantedPositions[j];
+        for (let i = 0; i < word.length; i++) {
+          const letter = word[i];
+          if (position.letter != letter && i == position.position) return false
+        }
+      }
+      return true
+    }
 
-    for (let i = 0; i < lista.length; i++) {
-      if (lista[i][position] == letra) {
-        processedWords.push(lista[i])
+    let tempWordsList = copyJson(wordsList)
+    let newWordsList = []
+
+    for (let i = 0; i < tempWordsList.length; i++) {
+      const word = tempWordsList[i]
+      let isWantedWord = checkIsWantedWord(word)
+      if (isWantedWord) newWordsList.push(word)
+    }
+
+    return newWordsList
+  }
+
+  const getUnwantedLetters = () => {
+    const tempWordsTry = copyJson(wordsTry)
+    const tempUnwantedLetters = []
+
+    for (let i = 0; i < tempWordsTry.length; i++) {
+      const wordTry = tempWordsTry[i]
+      for (let j = 0; j < wordTry.length; j++) {
+        const position = wordTry[j];
+        if (position.state == 2) tempUnwantedLetters.push(position.current)
       }
     }
-    return processedWords
+    return tempUnwantedLetters
   }
 
-  const removeWordsWithWantedLettersOnUnWantedPlaces = (wordsList, wantedLetters) => {
-    let tempWordsList = wordsList
+  const getWantedLettersOnUnwantedPositions = () => {
+    const tempWordsTry = copyJson(wordsTry)
+    const tempUnwantedPositions = []
 
-    wantedLetters.forEach((element, index) => {
-      if ((/[a-zA-Z]/).test(element))
-        tempWordsList = getWordsByLetterOnWantedPlaces(tempWordsList, element, index)
-    })
-
-    return tempWordsList
+    for (let i = 0; i < tempWordsTry.length; i++) {
+      const wordTry = tempWordsTry[i]
+      for (let j = 0; j < wordTry.length; j++) {
+        const position = wordTry[j];
+        if (position.state == 1) tempUnwantedPositions.push({
+          letter: position.current,
+          position: j
+        })
+      }
+    }
+    return tempUnwantedPositions
   }
 
-  const getWordsWithWantedLettersOnKnowPlaces = (wordsList, wantedLetters) => {
-    let tempWordsList = wordsList
-
-    wantedLetters.forEach((element, index) => {
-      if ((/[a-zA-Z]/).test(element))
-        tempWordsList = getWordsByLetterOnWantedPlaces(tempWordsList, element, index)
-    })
-
-    return tempWordsList
-  }
-
-  const removeWordsWithWantedLetters = (wordsList, wantedLetters) => {
-    let tempWordsList = wordsList
-
-    for (let i = 0; i < wantedLetters.length; i++) {
-      if ((/[a-zA-Z]/).test(wantedLetters[i]))
-        tempWordsList = tempWordsList.filter((word) => word.indexOf(wantedLetters[i]) != -1)
+  const removeWordsWithWantedLettersOnUnwantedPlaces = (wordsList, unwantedPositions) => {
+    const checkIsUnwantedWord = (word) => {
+      for (let j = 0; j < word.length; j++) {
+        const letter = word[j]
+        for (let k = 0; k < unwantedPositions.length; k++) {
+          const unwantedPosition = unwantedPositions[k]
+          const isUnwantedWord = unwantedPosition.position == j && unwantedPosition.letter == letter
+          if (isUnwantedWord) return true
+        }
+      }
+      return false
     }
 
-    return tempWordsList
+    let tempWordsList = copyJson(wordsList)
+    let newWordsList = []
+
+    for (let i = 0; i < tempWordsList.length; i++) {
+      const word = tempWordsList[i]
+      let isUnwantedWord = checkIsUnwantedWord(word)
+      if (!isUnwantedWord) newWordsList.push(word)
+    }
+
+    return newWordsList
   }
 
   const removeWordsWithUnwantedLetters = (wordsList, unwantedLetters) => {
@@ -93,79 +133,38 @@ function App() {
     return tempWordsList
   }
 
-  const copyJson = (x) => JSON.parse(JSON.stringify(x))
-
-  const handleInputKnowLetter = (e, letterIndex, wordTryIndex) => {
+  const updateWordTry = (wordTryState, wordTryIndex) => {
     let tempWordsTry = copyJson(wordsTry)
-    let newWordTry = tempWordsTry[wordTryIndex]
-    newWordTry[letterIndex] = e.target.value
-
+    tempWordsTry[wordTryIndex] = wordTryState
     setWordsTry(tempWordsTry)
-  }
-
-  const handleInputWantedLetter = (e) => {
-    let tempWantedLetters = copyJson(e.target.value)
-    tempWantedLetters = tempWantedLetters.split('')
-
-    setWantedLetters(tempWantedLetters)
-  }
-
-  const handleInputUnwantedLetter = (e) => {
-    let tempUnwantedLetters = copyJson(e.target.value)
-    tempUnwantedLetters = tempUnwantedLetters.split('')
-
-    setUnwantedLetters(tempUnwantedLetters)
-  }
-
-  const updateWordsTry = (wordTryIndex, wordTry) => {
-    let tempWordsTry = copyJson(wordsTry)
-
-    tempWordsTry[wordTryIndex] = wordTry
-
-    setWordsTry(tempWordsTry)
-  }
-
-  const updateWordTry = (wordTryState) => {
-    console.log(wordTryState)
   }
 
   useEffect(() => {
     let tempRemainingWords = wordsFile.words
-    wordsTry.forEach(element => {
-      tempRemainingWords = getWordsWithWantedLettersOnKnowPlaces(tempRemainingWords, element)
-      tempRemainingWords = removeWordsWithWantedLetters(tempRemainingWords, wantedLetters)
-      tempRemainingWords = removeWordsWithUnwantedLetters(tempRemainingWords, unwantedLetters)
-    });
 
+    tempRemainingWords =
+      removeWordsWithUnwantedLetters(
+        tempRemainingWords,
+        getUnwantedLetters()
+      )
+    tempRemainingWords =
+      removeWordsWithWantedLettersOnUnwantedPlaces(
+        tempRemainingWords,
+        getWantedLettersOnUnwantedPositions()
+      )
+    tempRemainingWords =
+      removeWordsWithoutWantedLettersOnWantedPlaces(
+        tempRemainingWords,
+        getWantedLettersOnWantedPositions()
+      )
 
     setRemainingWords(tempRemainingWords)
   }, [wordsTry])
 
-
-  useEffect(() => {
-    let tempRemainingWords = wordsFile.words
-
-    tempRemainingWords = getWordsWithWantedLettersOnKnowPlaces(tempRemainingWords, knowWord)
-    tempRemainingWords = removeWordsWithWantedLetters(tempRemainingWords, wantedLetters)
-    tempRemainingWords = removeWordsWithUnwantedLetters(tempRemainingWords, unwantedLetters)
-
-    setRemainingWords(tempRemainingWords)
-  }, [knowWord, unwantedLetters, wantedLetters])
-
   return (
     <div className="App">
-      <div className='letters'>
-        <input className='unwantedWordsInput' type={'text'} onChange={handleInputWantedLetter} placeholder="wanted letters" />
-        <input className='unwantedWordsInput' type={'text'} onChange={handleInputUnwantedLetter} placeholder="unwanted letters" />
-      </div>
-      <button className='clear' onClick={() => {
-        setKnowWord(['-', '-', '-', '-', '-',])
-      }}>
-        apagar
-      </button>
       {wordsTry.map(
         (value, index) => {
-          console.log(value)
           return <WordTry key={index} wordTryIndex={index} wordTry={value} updateWordTry={updateWordTry} />
         }
       )}

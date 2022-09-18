@@ -14,12 +14,7 @@ function WordTry({ updateWordTry, wordTry, wordTryIndex }) {
 
     const positionState = {
         current: '-',
-        lettersData: {
-            a: letterStates[0],
-            b: letterStates[0],
-            c: letterStates[0],
-            d: letterStates[0],
-        }
+        state: 2
     }
 
     const nextLetterState = (letterState) => {
@@ -30,26 +25,29 @@ function WordTry({ updateWordTry, wordTry, wordTryIndex }) {
 
     const changePositionData = (positionIndex) => {
         let tempWordState = copyJson(wordTryState)
-
         let tempPosition = tempWordState[positionIndex]
-        // if (tempLetter == false)
-        //     tempLetter = 0
-
-        tempPosition.lettersData[tempPosition.current] = nextLetterState(tempPosition.lettersData[tempPosition.current])
+        tempPosition.state = nextLetterState(tempPosition.state)
 
         setWordTryState(tempWordState)
     }
 
     const changeHandle = (e, positionIndex) => {
         let tempWordTryState = copyJson(wordTryState)
-        console.log(tempWordTryState)
+
         tempWordTryState[positionIndex].current = e.target.value
-        tempWordTryState[positionIndex].lettersData[e.target.value] = 2
 
         setWordTryState(tempWordTryState)
     }
 
+    const getPositionInputBackgroundColor = (value) => {
+        const colors = {
+            0: '#3AA394',
+            1: '#D3AD69',
+            2: '#312A2C'
+        }
 
+        return colors[value.state]
+    }
 
     useEffect(() => {
         updateWordTry(wordTryState, wordTryIndex)
@@ -58,9 +56,18 @@ function WordTry({ updateWordTry, wordTry, wordTryIndex }) {
     return (
         <div className='inputRow'>
             {wordTryState.map((value, index) =>
-                <div key={index}>
-                    <input onChange={e => changeHandle(e, index)} className='letterInput' type={'text'} maxLength="1" value={value.current} />
-                    <button onClick={() => changePositionData(index,)}> %</button>
+                <div key={index} >
+                    <input
+                        style={{
+                            backgroundColor: getPositionInputBackgroundColor(value)
+                        }}
+                        onChange={e => changeHandle(e, index)}
+                        className='letterInput'
+                        type={'text'}
+                        maxLength="1"
+                        value={value.current}
+                    />
+                    <div onClick={() => changePositionData(index,)}> %</div>
                 </div>
             )}
         </div>
