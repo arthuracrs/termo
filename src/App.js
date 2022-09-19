@@ -55,7 +55,7 @@ function App() {
         const position = wantedPositions[j];
         for (let i = 0; i < word.length; i++) {
           const letter = word[i];
-          if (position.letter != letter && i === position.position) return false
+          if (position.letter !== letter && i === position.position) return false
         }
       }
       return true
@@ -104,17 +104,30 @@ function App() {
     return tempUnwantedPositions
   }
 
-  const removeWordsWithWantedLettersOnUnwantedPlaces = (wordsList, unwantedPositions) => {
-    const checkIsUnwantedWord = (word) => {
-      for (let j = 0; j < word.length; j++) {
-        const letter = word[j]
-        for (let k = 0; k < unwantedPositions.length; k++) {
-          const unwantedPosition = unwantedPositions[k]
-          const isUnwantedWord = unwantedPosition.position === j && unwantedPosition.letter === letter
-          if (isUnwantedWord) return true
+  const removeWordsWithWantedLettersOnUnwantedPlaces = (wordsList, yellowLetters) => {
+    const sholdDiscardWord = (word) => {
+      let discard = false
+      if (yellowLetters.length > 0) {
+        for (let i = 0; i < yellowLetters.length; i++) {
+          const yellowLetter = yellowLetters[i];
+          const hasYellowLetter = word.indexOf(yellowLetter.letter) > -1
+          if (hasYellowLetter) {
+            for (let j = 0; j < word.length; j++) {
+              const letter = word[j];
+              if (letter === yellowLetter.letter && j === yellowLetter.position) {
+                return true
+              } else {
+                discard = false
+              }
+            }
+          } else {
+            return true
+          }
         }
+      } else {
+        discard = false
       }
-      return false
+      return discard
     }
 
     let tempWordsList = copyJson(wordsList)
@@ -122,8 +135,8 @@ function App() {
 
     for (let i = 0; i < tempWordsList.length; i++) {
       const word = tempWordsList[i]
-      let isUnwantedWord = checkIsUnwantedWord(word)
-      if (!isUnwantedWord) newWordsList.push(word)
+
+      if (!sholdDiscardWord(word)) newWordsList.push(word)
     }
 
     return newWordsList
@@ -148,7 +161,7 @@ function App() {
 
   useEffect(() => {
     let tempRemainingWords = wordsFile.words
-   
+
     tempRemainingWords =
       removeWordsWithUnwantedLetters(
         tempRemainingWords,
@@ -161,8 +174,6 @@ function App() {
         getWantedLettersOnUnwantedPositions()
       )
 
-
-
     tempRemainingWords =
       removeWordsWithoutWantedLettersOnWantedPlaces(
         tempRemainingWords,
@@ -170,7 +181,10 @@ function App() {
       )
 
     setRemainingWords(tempRemainingWords)
-  }, [wordsTry])
+  },
+    // eslint-disable-next-line  
+    [wordsTry]
+  )
 
   return (
     <div className="App">
