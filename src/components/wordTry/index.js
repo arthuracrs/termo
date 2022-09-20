@@ -35,6 +35,11 @@ function WordTry({ updateWordTry, wordTry, wordTryIndex }) {
 
         setWordTryState(tempWordTryState)
 
+        const form = e.target.form;
+        const index = [...form].indexOf(e.target);
+        form.elements[index + 1].focus();
+        e.preventDefault();
+
     }
 
     const getPositionInputBackgroundColor = (value) => {
@@ -52,9 +57,9 @@ function WordTry({ updateWordTry, wordTry, wordTryIndex }) {
     }, [wordTryState])
 
     return (
-        <div className='inputRow'>
+        <form id={'inputRow-' + wordTryIndex} className='inputRow'>
             {wordTryState.map((value, index) =>
-                <div key={index} className={'wordTry'} >
+                <div id={'inputLetter-' + index} key={index} className={'wordTry'} >
                     <input
                         style={{
                             backgroundColor: getPositionInputBackgroundColor(value)
@@ -66,11 +71,11 @@ function WordTry({ updateWordTry, wordTry, wordTryIndex }) {
                         value={value.current}
                     />
                     <div className='changeButtom' onClick={() => changePositionData(index,)}>
-                        <img src={reloadImg}/>
+                        <img src={reloadImg} />
                     </div>
                 </div>
             )}
-        </div>
+        </form>
     );
 }
 
